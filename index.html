@@ -1,184 +1,171 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Symmetrybot: asistente de chat para negocios pequeños</title>
-<meta name="description" content="Un asistente de chat con IA que responde a tus clientes, agenda y cancela citas, toma pedidos y deja todo anotado en una hoja.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 4a12 12 0 0 0 0 24z' fill='%233A3FD6'/%3E%3Cpath d='M16 4a12 12 0 0 1 0 24z' fill='none' stroke='%233A3FD6' stroke-width='2'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090c17">
+<meta name="description" content="Symmetrybot ayuda a tu negocio a atender WhatsApp, gestionar pedidos y organizar citas con asistentes de inteligencia artificial.">
+<title>Symmetrybot — Más conversaciones, menos trabajo</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23a994ff%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%236fe3d1%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%2292%22%20height%3D%2292%22%20rx%3D%2224%22%20fill%3D%22url%28%23g%29%22%2F%3E%3Cpath%20d%3D%22M71%2029H41C28%2029%2025%2046%2041%2049L59%2052C77%2055%2073%2072%2057%2072H29%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%229%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2275%22%20cy%3D%2229%22%20r%3D%225%22%20fill%3D%22white%22%2F%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2272%22%20r%3D%225%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E">
 <style>
-:root{
-  --ink:#12152b; --paper:#f6f6fb; --surface:#ffffff; --accent:#3a3fd6; --on-accent:#ffffff;
-  --soft:#dfe1f7; --muted:#4b4f6b; --amber:#ffbf3c;
-  --panel:#12152b; --panel-card:#1d2250; --pale:#cfd3f5;
-  --head:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
-  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --ink:#eceefb; --paper:#0f1124; --surface:#1a1e3c; --accent:#8d92ff; --on-accent:#0f1124;
-    --soft:#171a38; --muted:#a5a9c9;
-    --panel:#080a18; --panel-card:#1a1e3c; --pale:#a5a9c9;
-    color-scheme:dark;
-  }
-}
-*{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.6;font-size:1.0625rem}
-a{color:inherit}
-:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-header{padding:22px 0}
-header .wrap{display:flex;justify-content:space-between;align-items:center}
-.logo{display:inline-flex;align-items:center;gap:10px;font-family:var(--head);font-weight:800;font-size:1.35rem;text-decoration:none;letter-spacing:-.02em}
-.logo svg{width:30px;height:30px}
-nav{display:flex;align-items:center}
-nav a{margin-left:24px;text-decoration:none;font-weight:500;color:var(--muted)}
-nav a:hover{color:var(--ink)}
-.btn{display:inline-block;background:var(--accent);color:var(--on-accent);padding:14px 26px;border-radius:999px;font-weight:600;text-decoration:none;transition:opacity .2s}
-nav a.btn{color:var(--on-accent)}
-.btn:hover{opacity:.85}
-.btn.alt{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
-.btn.alt:hover{opacity:1;background:var(--ink);color:var(--paper)}
-
-.hero{padding:56px 0 80px}
-h1{font-family:var(--head);font-weight:800;font-size:clamp(2.4rem,6vw,4.4rem);line-height:1.03;letter-spacing:-.035em;max-width:16ch}
-.hero p.lead{font-size:1.2rem;color:var(--muted);max-width:52ch;margin:22px 0 32px}
-.hero .cta{display:flex;gap:14px;flex-wrap:wrap}
-.mirror{display:grid;grid-template-columns:1fr 1fr;margin-top:64px;border-radius:28px;overflow:hidden;background:var(--panel);position:relative;color:#fff}
-.mirror::after{content:"";position:absolute;left:50%;top:24px;bottom:24px;width:2px;background:repeating-linear-gradient(var(--pale) 0 8px,transparent 8px 16px);opacity:.35}
-.side{padding:34px 30px;min-height:330px}
-.side h2{font-family:var(--head);font-size:1rem;font-weight:700;color:var(--pale);margin-bottom:18px}
-.chat,.result{display:flex;flex-direction:column;gap:12px}
-.msg{max-width:88%;padding:12px 16px;border-radius:18px;font-size:.98rem;line-height:1.45;opacity:0;transform:translateY(8px);animation:in .5s forwards}
-.msg.c{background:#fff;color:#12152b;align-self:flex-start;border-bottom-left-radius:4px}
-.msg.b{background:#3a3fd6;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
-.msg:nth-child(1){animation-delay:.4s}.msg:nth-child(2){animation-delay:1.6s}.msg:nth-child(3){animation-delay:2.8s}.msg:nth-child(4){animation-delay:4s}
-.card{background:var(--panel-card);border-radius:16px;padding:16px 18px;color:#fff;opacity:0;transform:translateY(8px);animation:in .5s forwards}
-.card:nth-child(1){animation-delay:4.6s}.card:nth-child(2){animation-delay:5.2s}.card:nth-child(3){animation-delay:5.8s}
-.card small{display:block;color:var(--pale);font-size:.85rem}
-.card strong{font-family:var(--head);font-size:1.15rem}
-.card .ok{color:var(--amber);font-weight:600}
-@keyframes in{to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.msg,.card{animation:none;opacity:1;transform:none}}
-
-section{padding:76px 0}
-h2.t{font-family:var(--head);font-size:clamp(1.8rem,3.6vw,2.7rem);line-height:1.1;letter-spacing:-.025em;max-width:22ch;margin-bottom:40px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
-.grid4 h3,.steps h3{font-family:var(--head);font-size:1.2rem;margin-bottom:6px}
-.grid4 p,.steps p{color:var(--muted);font-size:1rem}
-.grid4>div{border-top:3px solid var(--ink);padding-top:16px}
-.who{background:var(--soft)}
-.tags{display:flex;flex-wrap:wrap;gap:12px}
-.tags span{background:var(--surface);padding:12px 22px;border-radius:999px;font-weight:600}
-.who p{margin-top:28px;max-width:60ch;color:var(--muted)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;counter-reset:s}
-.steps>div{counter-increment:s}
-.steps>div::before{content:counter(s);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--amber);color:#12152b;font-family:var(--head);font-weight:800;margin-bottom:14px}
-.contact{background:var(--panel);color:#fff}
-.contact h2.t{color:#fff}
-.contact p{color:var(--pale);max-width:52ch;margin-bottom:28px}
-.contact .btn{background:var(--amber);color:#12152b}
-footer{padding:28px 0;color:var(--muted);font-size:.95rem}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-
-@media (max-width:820px){
-  .grid4{grid-template-columns:1fr 1fr}
-  .steps{grid-template-columns:1fr}
-  .mirror{grid-template-columns:1fr}
-  .mirror::after{display:none}
-  nav a:not(.btn){display:none}
-}
-@media (max-width:480px){.grid4{grid-template-columns:1fr}}
+:root{--bg:#090c17;--bg2:#101524;--card:#151b2d;--card2:#191f32;--stroke:#30384b;--text:#f8f8ff;--muted:#9da8bd;--violet:#b5a3ff;--violet2:#856aff;--mint:#8df4d7;--radius:22px;--wrap:1180px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;overflow-x:hidden}a{color:inherit;text-decoration:none}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}svg{display:block}a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--mint);outline-offset:4px}::selection{background:#5b4ac3;color:white}.wrap{width:min(var(--wrap),calc(100% - 52px));margin:auto}.muted{color:var(--muted)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* nav */
+.site-nav{position:sticky;top:0;z-index:99;height:76px;border-bottom:1px solid #ffffff12;background:rgba(9,12,23,.82);backdrop-filter:blur(22px)}.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:20px}.logo{display:inline-flex;align-items:center;gap:10px;font-weight:780;font-size:20px;letter-spacing:-.8px;white-space:nowrap}.logo-mark{width:39px;height:39px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;box-shadow:0 0 30px #8b70ff30}.logo-mark svg{width:100%;height:100%;display:block}.logo em{font-style:normal;color:#b9a9ff}.nav-links{display:flex;gap:27px;align-items:center;font-size:13px;color:#c1c6d9}.nav-links a:hover,.foot-links a:hover{color:white}.nav-cta{display:flex;gap:11px;align-items:center}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:13px;font-weight:750;border-radius:12px;border:1px solid #ffffff25;padding:13px 18px;background:#ffffff0b;color:white;transition:transform .25s,background .25s,border-color .25s}.btn:hover{transform:translateY(-2px);background:#ffffff16;border-color:#ffffff60}.btn-primary{background:linear-gradient(110deg,#bdadff,#9b88f8);border-color:#c6baff;color:#111023;box-shadow:0 10px 40px #9d82ff30}.btn-primary:hover{background:#d1c5ff;border-color:#d1c5ff}.mobile-menu{display:none;border:1px solid #ffffff30;background:#ffffff0c;border-radius:10px;padding:8px 11px;color:white}
+/* Keep anchored sections visible beneath the sticky header. */
+#soluciones,#como-funciona,#contacto,#sectores,#preguntas{scroll-margin-top:98px}
+.compose.name-entry input{border-color:#78ecc2;box-shadow:0 0 0 1px #78ecc22a;background:#203b3a}.compose input:focus-visible{outline:none;border-color:#78ecc2;box-shadow:0 0 0 1px #78ecc22b}
+.compose.name-entry input::placeholder{color:#c3ffe6}
+/* hero */
+.hero{position:relative;min-height:735px;padding:76px 0 60px;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse 48% 61% at 77% 44%,#4b318d38,transparent 84%),radial-gradient(ellipse 38% 48% at 7% 25%,#18274e66,transparent 80%)}.hero:before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(#ffffff06 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px);background-size:58px 58px;mask-image:linear-gradient(to bottom,black,transparent 87%)}.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:center}.hero-copy{padding-bottom:6px;position:relative;z-index:4}.eyebrow{display:inline-flex;align-items:center;gap:9px;background:#b19bff13;border:1px solid #ab96ff4b;border-radius:99px;padding:8px 13px;color:#d6cbff;font-size:11px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}.eyebrow:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 4px #8df4d722}h1,h2,h3,h4,p{margin-top:0}h1,h2,h3{letter-spacing:-.055em}h1{font-size:clamp(45px,5.4vw,72px);line-height:1.055;margin:25px 0 22px;max-width:700px;font-weight:760}h1 .accent,.accent{background:linear-gradient(94deg,#e2d8ff,#a98bff 53%,#81e5d4);-webkit-background-clip:text;background-clip:text;color:transparent}.hero-lead{font-size:17px;line-height:1.85;color:#aeb6ce;max-width:545px}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}.fine-points{display:flex;gap:18px;flex-wrap:wrap;margin-top:27px;font-size:12px;color:#b4bed2}.fine-points span:before{content:"✓";color:#8df4d7;margin-right:8px}
+/* actual floating phone, independently transformable from screen interaction */
+.device-scene{height:660px;position:relative;display:grid;place-items:center;perspective:1350px;isolation:isolate;touch-action:pan-y}.device-scene:before{content:"";position:absolute;width:510px;height:510px;border-radius:50%;background:radial-gradient(circle,#9571ff35 0%,#5a41b31b 35%,transparent 68%);filter:blur(12px)}.device-scene:after{content:"";position:absolute;width:470px;height:470px;border-radius:50%;border:1px solid #bbadff1d;box-shadow:0 0 0 52px #bbadff07,0 0 0 104px #bbadff03;pointer-events:none}.float-layer{position:relative;z-index:3;transform-style:preserve-3d}.device-scene:hover .float-layer{animation-play-state:paused}.phone{--mouse-x:50%;--mouse-y:50%;position:relative;width:303px;height:619px;padding:9px;border-radius:47px;transform-style:preserve-3d;transform:translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(-5deg);will-change:transform;box-shadow:0 46px 78px #02020aca,0 17px 28px #02020a9c,0 0 0 1px #757586,0 0 0 3px #292b3d;background:linear-gradient(110deg,#3f4155 4%,#11131e 26%,#333547 62%,#737588 100%)}.phone:before{content:"";position:absolute;inset:-2px;border-radius:49px;border:1px solid #c7c8e655;pointer-events:none;transform:translateZ(1px)}.phone:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:47px;background:radial-gradient(circle at var(--mouse-x) var(--mouse-y),#ffffff25,transparent 48%);mix-blend-mode:screen;z-index:8}.phone-button{position:absolute;right:-5px;top:151px;width:4px;height:78px;border-radius:0 4px 4px 0;background:linear-gradient(#9496a9,#36374e);box-shadow:1px 0 2px #090914}.phone-screen{height:100%;border-radius:39px;overflow:hidden;position:relative;background:#0b141a;display:flex;flex-direction:column;transform:translateZ(8px);box-shadow:inset 0 0 0 1px #ffffff1f}.dynamic-island{position:absolute;top:7px;left:50%;transform:translateX(-50%);background:#020506;height:23px;width:96px;border-radius:30px;z-index:7}.statusbar{height:32px;flex:none;padding:8px 21px 0;color:#fcffff;background:#202c33;display:flex;justify-content:space-between;align-items:flex-start;font-size:9px;font-weight:750}.chathead{height:54px;flex:none;background:#202c33;border-bottom:1px solid #ffffff0d;display:flex;gap:8px;align-items:center;padding:5px 11px;color:#fff}.back{font-size:26px;color:#b9c5ce;line-height:1}.avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;flex:0 0 34px}.avatar svg{width:100%;height:100%}.contact{min-width:0;flex:1}.contact strong{display:block;font-size:12px;white-space:nowrap}.contact small{display:block;font-size:9px;color:#aebdc4}.head-action{font-size:16px;color:#d3dedf;letter-spacing:6px}.phone-feed{flex:1;min-height:0;overflow-y:auto;padding:15px 11px 12px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:#44505a transparent;background-color:#0b141a;background-image:radial-gradient(#ffffff08 .8px,transparent .8px);background-size:17px 17px}.chat-date{align-self:center;color:#a4b1bb;font-size:9px;background:#1d2830;padding:4px 10px;border-radius:7px;margin:2px 0 3px}.bubble{max-width:89%;font-size:11.5px;line-height:1.42;white-space:pre-wrap;padding:9px 10px 7px;border-radius:10px;color:#e9edef;box-shadow:0 1px 5px #0003;overflow-wrap:anywhere}.bubble.assistant{align-self:flex-start;background:#202c33;border-top-left-radius:3px}.bubble.human{align-self:flex-end;background:#005c4b;border-top-right-radius:3px}.stamp{font-size:8px;text-align:right;color:#a4bec2;margin-top:5px}.stamp .ticks{color:#84d4e8}.typing-dot{align-self:flex-start;background:#202c33;color:#b6c5cc;border-radius:12px;padding:10px 15px;letter-spacing:4px}.chat-bottom{flex:none;padding:9px 14px 24px;background:#202c33;border-top:1px solid #ffffff0b;position:relative;z-index:2}.chat-bottom:after{content:"";position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:62px;height:3px;background:#ffffff2a;border-radius:999px;pointer-events:none}.reply-pills{display:flex;gap:6px;flex-wrap:wrap;max-height:77px;overflow-y:auto;margin-bottom:7px;scrollbar-width:thin}.reply-pills button{font-size:10px;color:#c3f9e2;border:1px solid #477f70;background:#183d36;padding:6px 9px;border-radius:9px;line-height:1.3}.reply-pills button:hover{background:#275f4f}.compose{display:flex;gap:8px;align-items:center;min-height:39px}.compose input{background:#2a3942;border:1px solid #ffffff12;border-radius:22px;height:38px;padding:9px 12px;color:white;font-size:10px;min-width:0;flex:1;outline:none}.compose input::placeholder{color:#a7b0b4}.compose button{border:0;background:#00a884;color:#00281f;border-radius:50%;width:36px;height:36px;flex:0 0 36px;font-size:15px;display:grid;place-items:center}.phone-guide{margin:18px 0 0;font-size:12px;color:#aeb6cb;max-width:460px;line-height:1.6}.phone-guide::first-letter{color:#b5a4ff}@keyframes floatDevice{0%,100%{transform:translateY(3px)}50%{transform:translateY(-13px)}}
+/* other sections */
+.trustbar{border-top:1px solid #ffffff0a;border-bottom:1px solid #ffffff0a;background:#111525}.trustgrid{display:grid;grid-template-columns:repeat(4,1fr)}.trustgrid div{padding:22px 14px;border-right:1px solid #ffffff0e;text-align:center}.trustgrid div:last-child{border-right:0}.trustgrid b{font-size:14px;display:block}.trustgrid small{font-size:11px;color:var(--muted)}.section{padding:98px 0}.section-title{max-width:740px;margin-bottom:37px}.kicker{color:#ab99ff;text-transform:uppercase;letter-spacing:.16em;font-weight:800;font-size:11px;margin-bottom:15px}h2{font-size:clamp(31px,4vw,49px);line-height:1.14;margin-bottom:17px;font-weight:760}h3{font-weight:750}p{line-height:1.75}.section-title p{color:#aeb6cb;font-size:15px}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.feature{background:linear-gradient(160deg,#192037,#101626);border:1px solid #ffffff15;border-radius:20px;padding:27px;min-height:235px;transition:transform .25s,border-color .25s}.feature:hover{transform:translateY(-5px);border-color:#9d8afa70}.feature .symbol{width:42px;height:42px;background:#ab98ff20;border:1px solid #ab98ff3d;border-radius:13px;display:grid;place-items:center;font-size:21px;margin-bottom:22px}.feature h3{font-size:17px;margin-bottom:8px}.feature p{color:#aeb6cc;font-size:13px;margin:0}.alternate{background:#111629;border-top:1px solid #ffffff0b;border-bottom:1px solid #ffffff0b}.process{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.step{padding:25px;border:1px solid #ffffff1b;border-radius:19px;background:#ffffff07}.step .number{font-size:11px;color:#b7a8ff;font-weight:800;margin-bottom:21px;display:block}.step h3{font-size:18px;margin-bottom:8px}.step p{font-size:13px;color:#aeb6cc;margin:0}.industry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.industry{border:1px solid #ffffff17;background:linear-gradient(150deg,#171e32,#111626);border-radius:18px;padding:23px}.industry .emoji{font-size:27px}.industry h3{font-size:17px;margin:14px 0 7px}.industry p{color:var(--muted);font-size:12px;margin:0}.faqgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.faq{background:#151b2d;border:1px solid #ffffff15;border-radius:16px;padding:18px 20px}.faq summary{font-weight:750;cursor:pointer;font-size:13px}.faq p{color:#acb5ca;font-size:12px;margin:12px 0 0}.cta-section{padding:12px 0 110px}.cta-box{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:40px 44px;border-radius:24px;background:radial-gradient(ellipse at 80% 0%,#927bff35,transparent 60%),linear-gradient(130deg,#251d49,#151a32);border:1px solid #9c8aff46;box-shadow:0 20px 70px #0006}.cta-box h2{font-size:34px;max-width:600px;margin:0}.cta-box p{color:#bdc4d9;max-width:580px;margin:13px 0 0;font-size:13px}.site-footer{border-top:1px solid #ffffff10;padding:30px 0 35px;background:#0b101d}.footer-top{display:flex;align-items:center;justify-content:space-between;gap:20px}.foot-links{display:flex;gap:22px;font-size:12px;color:#b9c2d7}.copyright{margin-top:17px;font-size:11px;color:#8994ad}
+/* Privacy view: complete policy is IN THIS FILE, no second HTML */
+#privacyView{display:none;min-height:calc(100vh - 76px);background:radial-gradient(ellipse 70% 450px at 12% 0%,#45318440,transparent 80%),var(--bg)}.privacy-active #privacyView{display:block}.privacy-active #landingView{display:none}.privacy-hero{padding:70px 0 35px}.privacy-hero h1{font-size:clamp(39px,5vw,59px);margin:17px 0}.privacy-hero p{max-width:700px;color:#aeb7ce}.privacy-meta{font-size:12px;color:#c1b8f3}.privacy-layout{display:grid;grid-template-columns:225px minmax(0,1fr);gap:36px;padding-bottom:95px}.privacy-toc{align-self:start;position:sticky;top:112px;background:#141a2c;border:1px solid #ffffff17;border-radius:17px;padding:20px;display:grid;gap:12px}.privacy-toc strong{font-size:12px;margin-bottom:3px}.privacy-toc a{color:#aeb9d0;font-size:11px}.privacy-toc a:hover{color:#e9e2ff}.privacy-content{border:1px solid #ffffff17;border-radius:21px;background:#13192b;padding:35px 40px}.privacy-content section{padding:0 0 25px;margin-bottom:25px;border-bottom:1px solid #ffffff12;scroll-margin-top:115px}.privacy-content section:last-child{margin-bottom:0;border-bottom:0;padding-bottom:0}.privacy-content h2{font-size:22px;letter-spacing:-.03em;margin:0 0 12px}.privacy-content p,.privacy-content li{color:#bdc5d6;font-size:13px;line-height:1.85}.privacy-content p{margin:0 0 12px}.privacy-content ul{margin:0 0 14px;padding-left:22px}.privacy-content li{margin-bottom:6px}.privacy-content a{color:#bcb0ff;text-decoration:underline;text-underline-offset:3px}.privacy-content .quote{padding:13px 15px;background:#a292ff13;border-left:3px solid #a292ff;border-radius:4px;color:#c5c6da;font-size:12px}.privacy-content strong{color:#eef1fc}
+@media(max-width:1060px){.hero-grid{grid-template-columns:1fr 1fr;gap:0}.hero h1{font-size:49px}.device-scene{transform:scale(.91);transform-origin:center}.device-hint{right:0}.floating-card.left{left:-40px}.feature-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:780px){.site-nav{height:66px}.nav-inner{height:66px}.nav-links{display:none;position:absolute;left:22px;right:22px;top:70px;flex-direction:column;align-items:stretch;padding:17px 20px;background:#171d2f;border:1px solid #ffffff2d;border-radius:15px;box-shadow:0 20px 60px #000a}.nav-links.open{display:flex}.nav-links a{padding:6px}.nav-cta .nav-contact{display:none}.mobile-menu{display:block}.hero{padding:49px 0 30px}.hero-grid{grid-template-columns:1fr}.hero-copy{text-align:center}.hero h1{margin:21px auto 19px;max-width:720px;font-size:clamp(38px,8vw,58px)}.hero-lead{margin:auto}.hero-actions,.fine-points{justify-content:center}.device-scene{margin-top:16px;height:625px;transform:scale(.94)}.feature-grid,.process,.faqgrid,.price-grid{grid-template-columns:1fr}.industry-grid{grid-template-columns:repeat(2,1fr)}.trustgrid{grid-template-columns:repeat(2,1fr)}.trustgrid div:nth-child(2){border-right:0}.section{padding:75px 0}.cta-box{padding:30px;flex-direction:column;align-items:flex-start}.footer-top{flex-direction:column;align-items:flex-start}.privacy-layout{grid-template-columns:1fr}.privacy-toc{position:static;grid-template-columns:repeat(2,1fr)}.privacy-toc strong{grid-column:1/-1}}
+@media(max-width:520px){.wrap{width:calc(100% - 34px)}.logo{font-size:18px}.nav-cta .btn-primary{padding:10px 12px;font-size:11px}.hero h1{font-size:39px}.hero-lead{font-size:14px}.hero-actions{flex-direction:column}.hero-actions a{width:100%}.device-scene{height:605px;transform:scale(.82);transform-origin:center top;margin-bottom:-103px}.phone{width:303px}.trustgrid div{padding:17px 11px}.trustgrid b{font-size:12px}.trustgrid small{font-size:10px}.section{padding:65px 0}h2{font-size:32px}.feature{min-height:unset}.industry-grid{gap:10px}.industry{padding:17px}.cta-box h2{font-size:28px}.privacy-hero{padding:50px 0 30px}.privacy-content{padding:24px 20px}.privacy-toc{grid-template-columns:1fr 1fr;gap:11px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.float-layer{animation:none}.btn,.feature{transition:none}}
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <a class="logo" href="#">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4a12 12 0 0 0 0 24z" fill="var(--accent)"/><path d="M16 4a12 12 0 0 1 0 24z" fill="none" stroke="var(--accent)" stroke-width="2"/></svg>
-      Symmetrybot
-    </a>
-    <nav><a href="#que-hace">Qué hace</a><a href="#empezar">Cómo empezar</a><a class="btn" href="#contacto">Hablemos</a></nav>
-  </div>
-</header>
-
+<header class="site-nav"><div class="wrap nav-inner"><a class="logo" href="#inicio" aria-label="Symmetrybot inicio"><span class="logo-mark"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="symmetryBrandGradient1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a994ff"/><stop offset="100%" stop-color="#6fe3d1"/></linearGradient></defs><rect x="4" y="4" width="92" height="92" rx="24" fill="url(#symmetryBrandGradient1)"/><path d="M71 29H41C28 29 25 46 41 49L59 52C77 55 73 72 57 72H29" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="75" cy="29" r="5" fill="#fff"/><circle cx="25" cy="72" r="5" fill="#fff"/></svg></span>symmetry<em>bot</em></a><nav class="nav-links" id="navLinks" aria-label="Navegación"><a href="#soluciones">Soluciones</a><a href="#como-funciona">Cómo funciona</a><a href="#privacidad">Privacidad</a></nav><div class="nav-cta"><a class="btn nav-contact" href="#demo">Ver demostración</a><a class="btn btn-primary" href="#contacto">Hablar con nosotros <span aria-hidden="true">↗</span></a><button class="mobile-menu" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">☰</button></div></div></header>
+<div id="landingView">
 <main>
-<div class="hero">
-  <div class="wrap">
-    <h1>Tu negocio contesta y atiende, aunque estés ocupado.</h1>
-    <p class="lead">Symmetrybot es un asistente de chat con IA para negocios pequeños. Responde las preguntas de tus clientes, agenda y cancela citas, toma pedidos y deja todo anotado en una hoja.</p>
-    <div class="cta"><a class="btn" href="#contacto">Pruébalo en tu negocio</a><a class="btn alt" href="#que-hace">Ver qué hace</a></div>
+<section class="hero" id="inicio"><div class="wrap hero-grid"><div class="hero-copy"><span class="eyebrow">Atención inteligente para negocios</span><h1>Tu negocio sigue atendiendo. <span class="accent">Incluso cuando tú no puedes.</span></h1><p class="hero-lead">Convierte WhatsApp en una forma más fácil de vender y organizarte. Symmetrybot responde preguntas, guía pedidos y ayuda con las reservas para que tu equipo se concentre en lo importante.</p><div class="hero-actions"><a class="btn btn-primary" href="#demo">Probar el asistente <span>↗</span></a><a class="btn" href="#contacto">Quiero uno para mi negocio</a></div><div class="fine-points"><span>Personalizado para tu negocio</span><span>Pedidos y citas</span><span>Demostración gratuita</span></div><p class="phone-guide">↗ Mueve el mouse sobre el teléfono para inclinarlo y prueba el chat con los botones.</p></div>
+<div class="device-scene" id="demo" aria-label="Demostración interactiva del chatbot dentro de un teléfono"><div class="float-layer"><div class="phone" id="phoneMockup"><span class="phone-button" aria-hidden="true"></span><div class="phone-screen"><div class="dynamic-island" aria-hidden="true"></div><div class="statusbar"><span>9:41</span><span>●●● ▰</span></div><div class="chathead"><span class="back">‹</span><span class="avatar"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="symmetryBrandGradient4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a994ff"/><stop offset="100%" stop-color="#6fe3d1"/></linearGradient></defs><rect x="4" y="4" width="92" height="92" rx="24" fill="url(#symmetryBrandGradient4)"/><path d="M71 29H41C28 29 25 46 41 49L59 52C77 55 73 72 57 72H29" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="75" cy="29" r="5" fill="#fff"/><circle cx="25" cy="72" r="5" fill="#fff"/></svg></span><span class="contact"><strong>Symmetrybot demo</strong><small>en línea · simulación</small></span><span class="head-action">⌕ ⋮</span></div><div class="phone-feed" id="chatFeed" role="log" aria-live="polite"><div class="chat-date">HOY</div></div><div class="chat-bottom"><div class="reply-pills" id="replyPills" aria-label="Opciones de respuesta"></div><form class="compose" id="chatForm"><label class="sr-only" for="chatInput">Mensaje para la demostración</label><input type="text" id="chatInput" placeholder="Escribe un mensaje..." autocomplete="off" maxlength="80"><button type="submit" aria-label="Enviar mensaje">➤</button></form></div></div></div></div></div></div></section>
+<div class="trustbar"><div class="wrap trustgrid"><div><b>Responde</b><small>Consultas frecuentes</small></div><div><b>Agenda</b><small>Citas y reservas</small></div><div><b>Toma pedidos</b><small>Productos y entregas</small></div><div><b>Registra</b><small>Datos bien organizados</small></div></div></div>
+<section class="section" id="soluciones"><div class="wrap"><div class="section-title"><div class="kicker">Mucho más que un chatbot</div><h2>Atención que trabaja contigo, no en tu contra.</h2><p>Hacemos que las conversaciones de tus clientes se conviertan en tareas claras para tu negocio, sin complicarte la vida.</p></div><div class="feature-grid"><article class="feature"><span class="symbol">💬</span><h3>Respuestas naturales</h3><p>Horarios, preguntas frecuentes, servicios y detalles del negocio sin respuestas repetitivas.</p></article><article class="feature"><span class="symbol">🛍️</span><h3>Pedidos paso a paso</h3><p>Recoge productos, cantidades, entrega y datos del cliente antes de registrar una solicitud.</p></article><article class="feature"><span class="symbol">📅</span><h3>Reservas sin enredos</h3><p>Ayuda a consultar disponibilidad y gestionar citas con el calendario del negocio.</p></article><article class="feature"><span class="symbol">📋</span><h3>Todo en orden</h3><p>Centraliza la información en herramientas como Google Sheets para darle seguimiento.</p></article><article class="feature"><span class="symbol">🧠</span><h3>Contexto durante el chat</h3><p>El asistente usa el historial disponible para continuar conversaciones con sentido.</p></article><article class="feature"><span class="symbol">🤝</span><h3>Control humano</h3><p>Configura cuándo debe pedir ayuda a una persona en vez de inventar una respuesta.</p></article></div></div></section>
+<section class="section alternate" id="como-funciona"><div class="wrap"><div class="section-title"><div class="kicker">De la idea a la práctica</div><h2>Lo montamos contigo. Sin procesos interminables.</h2><p>Conocemos tu negocio, configuramos el asistente y lo probamos antes de ponerlo a atender clientes reales.</p></div><div class="process"><div class="step"><span class="number">01 / CONOCER</span><h3>Cuéntanos tu negocio</h3><p>Qué vendes, qué preguntan tus clientes y cómo organizas tus pedidos o citas.</p></div><div class="step"><span class="number">02 / CONFIGURAR</span><h3>Personalizamos la IA</h3><p>Preparamos las respuestas, el flujo y las conexiones necesarias.</p></div><div class="step"><span class="number">03 / PROBAR</span><h3>Lo pones a prueba</h3><p>Revisamos casos reales de uso y hacemos ajustes antes del lanzamiento.</p></div></div></div></section>
+<section class="section" id="sectores"><div class="wrap"><div class="section-title"><div class="kicker">Para negocios reales</div><h2>Sea cual sea tu negocio, tus clientes escriben.</h2></div><div class="industry-grid"><div class="industry"><div class="emoji">🍕</div><h3>Restaurantes</h3><p>Menú, pedidos y recogida.</p></div><div class="industry"><div class="emoji">💈</div><h3>Barberías</h3><p>Citas, servicios y horarios.</p></div><div class="industry"><div class="emoji">🛒</div><h3>Tiendas</h3><p>Productos y consultas.</p></div><div class="industry"><div class="emoji">💅</div><h3>Salones</h3><p>Reservas y disponibilidad.</p></div></div></div></section>
+<section class="section" id="preguntas"><div class="wrap"><div class="section-title"><div class="kicker">Preguntas frecuentes</div><h2>Todo claro desde el primer mensaje.</h2></div><div class="faqgrid"><details class="faq"><summary>¿Debo cambiar mi número de WhatsApp?</summary><p>Depende de tu cuenta y del método de integración disponible. Revisamos la compatibilidad antes de conectar el número.</p></details><details class="faq"><summary>¿Puedo cambiar productos y precios?</summary><p>Sí. Podemos configurarlo para consultar información que tu negocio gestione en una hoja de cálculo.</p></details><details class="faq"><summary>¿El chatbot registra pedidos de verdad?</summary><p>Un sistema configurado puede registrar pedidos confirmados. La demo del teléfono es solo una simulación y no crea pedidos reales.</p></details><details class="faq"><summary>¿Qué sucede si la IA no sabe algo?</summary><p>Se pueden configurar límites y la derivación a una persona para evitar inventar precios o confirmar acciones que fallaron.</p></details></div></div></section>
+<section class="cta-section" id="contacto"><div class="wrap"><div class="cta-box"><div><div class="kicker" style="color:#e2d7ff">La próxima conversación importa</div><h2>Tu negocio puede atender mejor desde hoy.</h2><p>Cuéntanos qué haces y te mostramos una demostración enfocada en lo que realmente necesitas.</p></div><a class="btn btn-primary" href="mailto:eddyxtreme03@gmail.com?subject=Quiero%20una%20demo%20de%20Symmetrybot&body=Hola%2C%20quiero%20una%20demostraci%C3%B3n%20para%20mi%20negocio.">Solicitar demostración ↗</a></div></div></section>
+</main><footer class="site-footer"><div class="wrap"><div class="footer-top"><a href="#inicio" class="logo"><span class="logo-mark" style="width:32px;height:32px"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="symmetryBrandGradient2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a994ff"/><stop offset="100%" stop-color="#6fe3d1"/></linearGradient></defs><rect x="4" y="4" width="92" height="92" rx="24" fill="url(#symmetryBrandGradient2)"/><path d="M71 29H41C28 29 25 46 41 49L59 52C77 55 73 72 57 72H29" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="75" cy="29" r="5" fill="#fff"/><circle cx="25" cy="72" r="5" fill="#fff"/></svg></span>symmetry<em>bot</em></a><div class="foot-links"><a href="#soluciones">Servicios</a><a href="#privacidad">Política de privacidad</a><a href="mailto:eddyxtreme03@gmail.com">Contacto ↗</a></div></div><div class="copyright">© 2026 Symmetrybot · Demostración de chat ilustrativa, sin pedidos ni reservas reales.</div></div></footer></div>
+<div id="privacyView" aria-labelledby="privacyHeading"><main><section class="privacy-hero"><div class="wrap"><a href="#inicio" style="color:#c7baff;font-size:12px">← Volver a Symmetrybot</a><div class="kicker" style="margin-top:26px">Transparencia y datos</div><h1 id="privacyHeading">Política de <span class="accent">privacidad</span></h1><p>Cómo Symmetrybot utiliza los datos necesarios para ofrecer asistentes de mensajería a negocios pequeños.</p><div class="privacy-meta">Última actualización: 13 de octubre de 2026</div></div></section><div class="wrap privacy-layout"><aside class="privacy-toc"><strong>Contenido</strong><a href="#privacidad-quienes">Quiénes somos</a><a href="#privacidad-datos">Qué datos usamos</a><a href="#privacidad-finalidad">Para qué usamos los datos</a><a href="#privacidad-proveedores">Con quién se procesan</a><a href="#privacidad-google">Uso limitado de Google</a><a href="#privacidad-conservacion">Conservación</a><a href="#privacidad-derechos">Tus derechos</a><a href="#privacidad-seguridad">Seguridad</a><a href="#privacidad-cambios">Cambios</a><a href="#privacidad-contacto">Contacto</a></aside><article class="privacy-content"><article class="policy">
+<section id="privacidad-quienes"><h2>Quiénes somos</h2><p>Symmetrybot (symmetrybot.app) es un servicio que ofrece asistentes automáticos de mensajería para negocios pequeños. Los asistentes responden preguntas de los clientes del negocio y agendan o cancelan citas en el calendario del negocio.</p><p>En esta política, “el negocio” es quien contrata Symmetrybot y “clientes finales” son las personas que escriben al asistente.</p></section>
+<section id="privacidad-datos"><h2>Qué datos usamos</h2><p><strong>Datos de Google, solo cuando el negocio da su permiso:</strong></p><ul><li>Eventos de Google Calendar del calendario que el negocio elige: título, fecha, hora y duración.</li><li>Una hoja de Google Sheets que el negocio elige, donde el asistente agrega filas con el nombre del cliente, el servicio, la fecha, la hora y el estado de la cita (confirmada o cancelada).</li></ul><p><strong>Datos de los clientes finales:</strong></p><ul><li>El contenido de la conversación con el asistente.</li><li>El nombre que la persona indique, el servicio que quiere y la fecha y hora de la cita.</li><li>Si el canal es WhatsApp u otra aplicación de mensajería, el número de teléfono o identificador que ese canal entrega.</li></ul><p>El asistente no está diseñado para recibir datos de pago, contraseñas ni información sensible, y pedimos a los clientes finales que no los escriban.</p></section>
+<section id="privacidad-finalidad"><h2>Para qué usamos los datos</h2><p>Solo para prestar el servicio: responder mensajes, revisar la disponibilidad del calendario, crear y cancelar citas, guardar el historial en la hoja del negocio y corregir errores del servicio.</p><p>No vendemos datos. No los usamos para publicidad, ni para crear perfiles de las personas, ni para entrenar modelos de inteligencia artificial.</p></section>
+<section id="privacidad-proveedores"><h2>Con quién se procesan</h2><p>Para funcionar, el servicio usa proveedores que procesan datos en nuestro nombre:</p><ul><li>Google, para Google Calendar y Google Sheets.</li><li>Una plataforma de automatización (n8n), donde se ejecuta el asistente.</li><li>Un proveedor de modelos de lenguaje (Anthropic), que recibe el texto de la conversación y los datos de la cita necesarios para redactar las respuestas.</li><li>Meta, cuando el negocio usa WhatsApp como canal.</li></ul><p>No compartimos datos con nadie más, salvo que una ley o una autoridad competente lo exija.</p></section>
+<section id="privacidad-google"><h2>Uso limitado de datos de Google</h2><p>El uso y la transferencia a cualquier otra aplicación de la información recibida de las API de Google se ajustará a la <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener noreferrer" target="_blank">Política de datos de usuario de los servicios de API de Google</a>, incluidos los requisitos de uso limitado.</p><div class="quote"><em>Symmetrybot's use and transfer to any other app of information received from Google APIs will adhere to the Google API Services User Data Policy, including the Limited Use requirements.</em></div></section>
+<section id="privacidad-conservacion"><h2>Cuánto tiempo conservamos los datos</h2><p>Conservamos los datos solo el tiempo necesario para prestar el servicio. Cuando el negocio termina el servicio o lo solicita, eliminamos su configuración y retiramos el acceso a su cuenta de Google.</p><p>Las citas y filas ya creadas en el calendario y la hoja del negocio pertenecen al negocio, que las gestiona desde su propia cuenta de Google.</p></section>
+<section id="privacidad-derechos"><h2>Tus derechos y cómo retirar el acceso</h2><ul><li>Puedes retirar el acceso de Symmetrybot a tu cuenta de Google en cualquier momento desde <a href="https://myaccount.google.com/permissions" rel="noopener noreferrer" target="_blank">myaccount.google.com/permissions</a>.</li><li>Puedes pedirnos acceso, corrección o eliminación de tus datos escribiendo al correo de contacto.</li><li>Si eres cliente final de un negocio que usa Symmetrybot, también puedes hacer esa solicitud al negocio o a nosotros.</li></ul></section>
+<section id="privacidad-seguridad"><h2>Seguridad</h2><p>Aplicamos medidas razonables para proteger los datos, como limitar quién tiene acceso y guardar las credenciales de conexión en la plataforma de automatización. Ningún sistema es completamente seguro, y no podemos garantizar una protección absoluta.</p></section>
+<section id="privacidad-cambios"><h2>Cambios en esta política</h2><p>Si cambiamos esta política, publicaremos la nueva versión en esta página con su fecha de actualización.</p></section>
+<section id="privacidad-contacto"><h2>Contacto</h2><p>Para cualquier pregunta o solicitud sobre tus datos, escríbenos a <a href="mailto:eddyxtreme03@gmail.com">eddyxtreme03@gmail.com</a>.</p></section>
+</article></article></div></main><footer class="site-footer"><div class="wrap"><div class="footer-top"><a href="#inicio" class="logo"><span class="logo-mark" style="width:32px;height:32px"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="symmetryBrandGradient3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a994ff"/><stop offset="100%" stop-color="#6fe3d1"/></linearGradient></defs><rect x="4" y="4" width="92" height="92" rx="24" fill="url(#symmetryBrandGradient3)"/><path d="M71 29H41C28 29 25 46 41 49L59 52C77 55 73 72 57 72H29" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="75" cy="29" r="5" fill="#fff"/><circle cx="25" cy="72" r="5" fill="#fff"/></svg></span>symmetry<em>bot</em></a><div class="foot-links"><a href="#inicio">← Volver al inicio</a><a href="mailto:eddyxtreme03@gmail.com">Contacto</a></div></div><p class="copyright">© 2026 Symmetrybot. Todos los derechos reservados.</p></div></footer></div>
+<script>
+(()=>{
+'use strict';
+// One HTML file, with direct hash navigation to the full privacy policy.
+const landing=document.getElementById('landingView'),privacy=document.getElementById('privacyView'),links=document.getElementById('navLinks'),menu=document.getElementById('menuToggle');
+function showDemo(){if(window.matchMedia('(max-width:780px)').matches){const el=document.getElementById('demo');window.scrollTo({top:Math.max(0,window.scrollY+el.getBoundingClientRect().top-85),behavior:'instant'});}else{window.scrollTo({top:0,behavior:'instant'});}}
+function route(){const hash=decodeURIComponent(location.hash||'#inicio');const isPolicy=hash==='#privacidad'||hash.startsWith('#privacidad-');document.body.classList.toggle('privacy-active',isPolicy);landing.setAttribute('aria-hidden',String(isPolicy));privacy.setAttribute('aria-hidden',String(!isPolicy));document.title=isPolicy?'Política de privacidad | Symmetrybot':'Symmetrybot — Más conversaciones, menos trabajo';links.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.textContent='☰';requestAnimationFrame(()=>{if(isPolicy&&hash.startsWith('#privacidad-')){document.getElementById(hash.slice(1))?.scrollIntoView({block:'start'});}else if(isPolicy){window.scrollTo({top:0,behavior:'instant'});}else if(hash==='#demo'){showDemo();}else if(hash==='#inicio'){window.scrollTo({top:0,behavior:'instant'});}else{document.getElementById(hash.slice(1))?.scrollIntoView({block:'start'});}})}
+window.addEventListener('hashchange',route);
+window.addEventListener('load',()=>{if(location.hash==='#demo')showDemo();});
+route();menu.addEventListener('click',()=>{const open=links.classList.toggle('open');menu.textContent=open?'✕':'☰';menu.setAttribute('aria-expanded',String(open));});
+const stage=document.getElementById('demo'),phone=document.getElementById('phoneMockup');
+// Real spring interpolation: both 3D orientation and translation track cursor location.
+// The user explicitly controls the effect with the mouse; automatic floating respects reduced-motion in CSS.
+const state={x:0,y:0,rx:0,ry:0};const dest={x:0,y:0,rx:0,ry:0};let raf=0;
+function frame(){let moving=false;for(const key of Object.keys(state)){state[key]+=(dest[key]-state[key])*.13;if(Math.abs(dest[key]-state[key])>.01)moving=true;}phone.style.transform=`translate3d(${state.x.toFixed(2)}px,${state.y.toFixed(2)}px,0) rotateX(${state.rx.toFixed(2)}deg) rotateY(${state.ry.toFixed(2)}deg) rotateZ(-5deg)`;if(moving){raf=requestAnimationFrame(frame);}else{raf=0;}}
+function tick(){if(!raf)raf=requestAnimationFrame(frame)}
+{
+  stage.addEventListener('pointermove',e=>{
+    if(e.pointerType!=='mouse' && e.pointerType!=='pen')return;
+    // Track the cursor even after the name input was focused: focus must not permanently freeze tilt.
+    const rect=stage.getBoundingClientRect();
+    const nx=Math.max(-1,Math.min(1,((e.clientX-rect.left)/rect.width-.5)*2));
+    const ny=Math.max(-1,Math.min(1,((e.clientY-rect.top)/rect.height-.5)*2));
+    // Subtle motion around the clickable chat controls keeps buttons usable.
+    const overControls=!!e.target.closest('.chat-bottom');
+    const strength=overControls?0:1;
+    dest.x=nx*18*strength;
+    dest.y=ny*12*strength;
+    dest.ry=nx*16*strength;
+    dest.rx=-ny*12*strength;
+    phone.style.setProperty('--mouse-x',`${50+nx*32}%`);
+    phone.style.setProperty('--mouse-y',`${50+ny*32}%`);
+    tick();
+  });
+  stage.addEventListener('pointerleave',()=>{
+    Object.keys(dest).forEach(k=>dest[k]=0);
+    phone.style.setProperty('--mouse-x','50%');
+    phone.style.setProperty('--mouse-y','50%');
+    tick();
+  });
+}
+// Chromium can sometimes route real pointerdown events to the 3D wrapper,
+// even when hit-testing reports a visible button/input inside the phone.
+// Recover those interactions from the actual visual hit element. This runs
+// only for pointer events misrouted to the wrapper, never for normal clicks.
+stage.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+  if (e.target.closest('#replyPills button, #chatForm button, #chatInput')) return;
+  const hit = document.elementsFromPoint(e.clientX, e.clientY).find(el =>
+    el.matches?.('#replyPills button, #chatForm button, #chatInput'));
+  if (!hit || hit.disabled) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (hit.matches('#chatInput')) {
+    hit.focus();
+  } else {
+    hit.click();
+  }
+}, true);
 
-    <div class="mirror" aria-label="Ejemplo de un pedido por chat y lo que queda registrado">
-      <div class="side">
-        <h2>Lo que escribe tu cliente</h2>
-        <div class="chat">
-          <div class="msg c">Hola, ¿tienen café molido de 1 libra?</div>
-          <div class="msg b">Sí, tenemos. ¿Cuántos quieres?</div>
-          <div class="msg c">Dos. Los paso a buscar hoy, soy Carlos.</div>
-          <div class="msg b">Listo, Carlos: 2 cafés molidos de 1 libra para recoger hoy. Ya avisé a la tienda.</div>
-        </div>
-      </div>
-      <div class="side">
-        <h2>Lo que recibe tu negocio</h2>
-        <div class="result">
-          <div class="card"><small>Hoja de pedidos</small><strong>Nueva fila</strong> Carlos · 2 café molido 1 lb · recoger hoy</div>
-          <div class="card"><small>Aviso a ti</small><strong>Pedido nuevo de Carlos</strong> <span class="ok">enviado</span></div>
-          <div class="card"><small>Tu tienda</small><strong>Cero mensajes por contestar</strong></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+// Interactive local simulation, never sends network requests.
+const feed=document.getElementById('chatFeed'),choices=document.getElementById('replyPills'),input=document.getElementById('chatInput'),form=document.getElementById('chatForm'),sendButton=form.querySelector('button[type="submit"]');
+// Focus or clicking the chat controls locks the floating device in a stable position.
+form.addEventListener('focusin',()=>{Object.keys(dest).forEach(k=>dest[k]=0);tick();});
+let mode='start',product='',amount=1,delivery='',service='',slot='',guest='',waiting=false;
+const hour=()=>new Date().toLocaleTimeString('es-DO',{hour:'2-digit',minute:'2-digit',hour12:false});
+function message(txt,who='assistant'){const outer=document.createElement('div');outer.className='bubble '+who;const body=document.createElement('span');body.textContent=txt;const stamp=document.createElement('div');stamp.className='stamp';stamp.textContent=hour();if(who==='human'){const ticks=document.createElement('span');ticks.className='ticks';ticks.textContent=' ✓✓';stamp.append(ticks)}outer.append(body,stamp);feed.append(outer);feed.scrollTop=feed.scrollHeight;}
+function options(items){choices.replaceChildren();items.forEach(([label,value])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',()=>reply(label,value));choices.appendChild(b);});}
+function say(text,opts){waiting=true;options([]);const t=document.createElement('div');t.className='typing-dot';t.textContent='•••';feed.append(t);feed.scrollTop=feed.scrollHeight;setTimeout(()=>{t.remove();message(text);waiting=false;options(opts||[]);},280);}
+function reset(){mode='start';product='';amount=1;delivery='';service='';slot='';guest='';waiting=false;form.classList.remove('name-entry');input.placeholder='Escribe un mensaje...';feed.replaceChildren();const d=document.createElement('div');d.className='chat-date';d.textContent='HOY';feed.append(d);message('¡Hola! 👋 Soy la demo de Symmetrybot. ¿Qué te gustaría probar?');options([['🍕 Hacer un pedido','order'],['📅 Reservar una cita','booking'],['ℹ️ Saber más','info']]);}
+function reply(label,value){if(waiting)return;if(value==='restart'){reset();return;}message(label,'human');if(mode==='start'||mode==='done'){
+if(value==='order'||/pedido|pizza|comprar/i.test(value)){mode='product';say('¡Claro! 🍕 Elige un producto de este menú de ejemplo.',[['Pepperoni mediana','pep'],['Jamón y queso','jam']]);}
+else if(value==='booking'||/cita|reserv/i.test(value)){mode='service';say('Perfecto 📅 ¿Qué servicio te interesa?', [['Corte de cabello','cut'],['Manicura','nails']]);}
+else{say('Atendemos consultas, guiamos pedidos y organizamos reservas. Prueba una conversación:',[['🍕 Pedidos','order'],['📅 Reservas','booking']]);}
+return;}
+if(mode==='product'){product=value==='pep'?'Pepperoni mediana':'Jamón y queso';mode='quantity';say(`¡Buena elección! ¿Cuántas unidades de ${product}?`,[['1 unidad','1'],['2 unidades','2'],['3 unidades','3']]);return;}
+if(mode==='quantity'){amount=Math.max(1,Math.min(3,Number(value)||1));mode='delivery';say('¿Quieres recoger tu pedido o recibirlo a domicilio?', [['🏪 Recoger','pickup'],['🛵 Delivery','delivery']]);return;}
+if(mode==='delivery'){delivery=value==='pickup'?'Recoger en el local':'Delivery';mode='name';form.classList.add('name-entry');input.placeholder='✍️ Escribe tu nombre aquí...';say('¡Perfecto! 😊 ¿A nombre de quién lo anotamos? Escribe TU nombre en la barra de abajo y presiona la flecha para enviarlo.', []);return;}
+if(mode==='service'){service=value==='cut'?'Corte de cabello':'Manicura';mode='slot';say('¿Cuál horario de ejemplo prefieres?', [['Mañana, 4:00 p. m.','tomorrow'],['Sábado, 11:00 a. m.','saturday']]);return;}
+if(mode==='slot'){slot=value==='tomorrow'?'Mañana, 4:00 p. m.':'Sábado, 11:00 a. m.';mode='name';form.classList.add('name-entry');input.placeholder='✍️ Escribe tu nombre aquí...';say('¡Genial! 😊 ¿A nombre de quién sería la cita? Escribe TU nombre en la barra de abajo y presiona la flecha.', []);return;}
+if(mode==='name'){guest=label.trim().slice(0,50)||'Cliente';mode='done';form.classList.remove('name-entry');input.placeholder='Escribe un mensaje...';if(service){say(`¡Listo, ${guest}! ✅
 
-<section id="que-hace">
-  <div class="wrap">
-    <h2 class="t">Hace lo que harías tú con tu teléfono en la mano</h2>
-    <div class="grid4">
-      <div><h3>Responde</h3><p>Horarios, productos, precios y preguntas repetidas, con la información de tu negocio.</p></div>
-      <div><h3>Agenda</h3><p>Revisa tu calendario, evita cruces de horario y respeta tu horario de atención.</p></div>
-      <div><h3>Toma pedidos</h3><p>Anota qué quiere cada cliente, a nombre de quién y cuándo lo recoge, y te avisa.</p></div>
-      <div><h3>Registra</h3><p>Cada cita o pedido queda en una hoja de cálculo que puedes abrir cuando quieras.</p></div>
-    </div>
-  </div>
-</section>
+Cita de ejemplo:
+• ${service}
+• ${slot}
 
-<section class="who">
-  <div class="wrap">
-    <h2 class="t">Hecho para negocios que atienden por chat</h2>
-    <div class="tags"><span>Tiendas</span><span>Restaurantes</span><span>Barberías</span><span>Salones</span></div>
-    <p>Cada cliente tiene su propio asistente, su calendario y su hoja. Si tu negocio es otro y recibe mensajes todo el día, cuéntanos cómo trabajas y vemos si encaja.</p>
-  </div>
-</section>
+Esta es una simulación: no se reservó ningún horario real.`,[['↻ Repetir demo','restart'],['🍕 Probar pedidos','order']]);}else{const subtotal=(product==='Pepperoni mediana'?450:480)*amount;say(`¡Listo, ${guest}! ✅
 
-<section id="empezar">
-  <div class="wrap">
-    <h2 class="t">Empieza con un piloto de una semana</h2>
-    <div class="steps">
-      <div><h3>Hablamos de tu negocio</h3><p>Qué preguntas te hacen más, quién contesta hoy y qué quieres que el asistente haga.</p></div>
-      <div><h3>Lo preparamos contigo</h3><p>Cargamos tus productos, servicios y horarios, y lo probamos antes de que lo vea un cliente.</p></div>
-      <div><h3>Lo usas una semana</h3><p>Acordamos qué medir al inicio y al final decides si sigue.</p></div>
-    </div>
-  </div>
-</section>
+Pedido de ejemplo:
+• ${amount} × ${product}
+• ${delivery}
+• Subtotal: RD$${subtotal.toLocaleString('es-DO')}
 
-<section class="contact" id="contacto">
-  <div class="wrap">
-    <h2 class="t">Cuéntanos cómo atiendes hoy a tus clientes</h2>
-    <p>Escríbenos y te respondemos para ver si Symmetrybot encaja en tu negocio.</p>
-    <a class="btn" href="mailto:eddyxtreme03@gmail.com">Escribir a Symmetrybot</a>
-  </div>
-</section>
-</main>
-
-<footer>
-  <div class="wrap"><span>© 2026 Symmetrybot</span><a href="privacidad.html">Política de privacidad</a></div>
-</footer>
-</body>
-</html>
+Simulación: no se registró un pedido ni un cargo de delivery.`,[['↻ Repetir demo','restart'],['📅 Probar reservas','booking']]);}return;}
+}
+function sendMessage(){
+  const val=input.value.trim();
+  if(!val)return;
+  // Don't silently lose the message if an earlier bot response is still finishing.
+  if(waiting){setTimeout(sendMessage,320);return;}
+  input.value='';
+  if(mode==='name'){reply(val,val);return;}
+  if(mode==='start'||mode==='done'){reply(val,val);return;}
+  message(val,'human');
+  message('En esta demo, elige una opción de los botones para continuar. 😊');
+}
+// Separate click and submit handling prevents browser form submission from interfering with the 3D mockup.
+sendButton.type='button';
+sendButton.addEventListener('click',sendMessage);
+form.addEventListener('submit',e=>{e.preventDefault();sendMessage();});
+reset();
+})();
+</script>
+</body></html>
