@@ -1,0 +1,49 @@
+/* Symmetrybot · capa de movimiento e ilustración. Se carga DESPUÉS de styles.css.
+   Tokens y curvas de transitions.dev. Todo respeta prefers-reduced-motion. */
+:root{--m-ease:cubic-bezier(.22,1,.36,1);--m-quick:150ms;--m-fast:250ms;--m-slow:500ms;--m-blur:3px;--m-dist:12px;--m-green:#193d34;--m-clay:#bb7357}
+.hero{position:relative}.hero>*{position:relative;z-index:1}.phone-stage{position:relative}
+/* Ilustración: arcos espejo (la simetría de la marca) detrás del hero */
+.hero-art{position:absolute!important;z-index:0!important;top:-60px;right:-120px;width:min(680px,70vw);pointer-events:none;fill:none;stroke-linecap:round}
+.hero-art path{stroke:var(--m-green);stroke-width:1.2;opacity:.16}
+.hero-art path.acc{stroke:var(--m-clay);opacity:.5}
+.float-chip{position:absolute;z-index:3;display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#fff;color:var(--m-green);border:1px solid #dce4d9;box-shadow:0 10px 28px -10px #193d3440;font:600 12px/1.2 Inter,'Segoe UI',system-ui,sans-serif;white-space:nowrap;pointer-events:none}
+.float-chip .icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.chip-a{top:11%;right:-1%}.chip-b{top:29%;right:3%}
+@media(max-width:1040px){.float-chip{display:none}.hero-art{opacity:.6}}
+/* Interacciones (siempre activas, son cortas) */
+.button .icon,.text-link .icon{transition:translate var(--m-fast) var(--m-ease)}
+.button:hover .icon{translate:3px -3px}.text-link:hover .icon{translate:4px 0}
+.solution-row,.process-grid article{transition:translate var(--m-fast) var(--m-ease)}
+.solution-row:hover{translate:6px 0}.process-grid article:hover{translate:0 -4px}
+/* FAQ: <details> animado sin tocar el HTML (Chromium/Safari reciente; el resto abre directo) */
+.faq-list details{interpolate-size:allow-keywords}
+.faq-list details::details-content{block-size:0;opacity:0;overflow:clip;transition:block-size var(--m-fast) var(--m-ease),opacity var(--m-fast) var(--m-ease),content-visibility var(--m-fast) allow-discrete}
+.faq-list details[open]::details-content{block-size:auto;opacity:1}
+.faq-list summary span{display:inline-block;transition:rotate var(--m-fast) var(--m-ease)}
+.faq-list details[open] summary span{rotate:45deg}
+.site-header{transition:box-shadow var(--m-fast) var(--m-ease)}.site-header.is-scrolled{box-shadow:0 8px 24px -16px #193d3455}
+/* Chat flotante: apertura con origen en el botón */
+.sb-panel:not([hidden]){transform-origin:100% 100%;animation:m-pop var(--m-fast) var(--m-ease) both}
+.sb-msg{animation:m-msg .3s var(--m-ease) both}
+@keyframes m-pop{from{opacity:0;transform:translateY(10px) scale(.96);filter:blur(var(--m-blur))}}
+@keyframes m-msg{from{opacity:0;transform:translateY(6px)}}
+@keyframes m-rise{from{opacity:0;transform:translateY(var(--m-dist));filter:blur(var(--m-blur))}}
+@keyframes m-draw{to{stroke-dashoffset:0}}
+@keyframes m-float{50%{translate:0 -8px}}
+@keyframes m-ring{0%{box-shadow:0 6px 26px #193d3430,0 0 0 0 #bb735777}100%{box-shadow:0 6px 26px #193d3430,0 0 0 16px #bb735700}}
+@media(prefers-reduced-motion:no-preference){
+  html{scroll-behavior:smooth}
+  /* Hero: entrada escalonada (texts reveal), solo CSS, sin parpadeo */
+  .hero-copy>*{animation:m-rise var(--m-slow) var(--m-ease) both}
+  .hero-copy>:nth-child(2){animation-delay:70ms}.hero-copy>:nth-child(3){animation-delay:140ms}
+  .hero-copy>:nth-child(4){animation-delay:210ms}.hero-copy>:nth-child(n+5){animation-delay:280ms}
+  .demo-board{animation:m-rise 700ms var(--m-ease) 200ms both}
+  .hero-art path{stroke-dasharray:1;stroke-dashoffset:1;animation:m-draw 1.8s var(--m-ease) forwards}
+  .hero-art path:nth-child(2){animation-delay:.15s}.hero-art path:nth-child(3){animation-delay:.3s}
+  .hero-art path:nth-child(4){animation-delay:.45s}.hero-art path:nth-child(5){animation-delay:.6s}.hero-art path:nth-child(6){animation-delay:.75s}
+  .phone{animation:m-float 7s ease-in-out 1.2s infinite}
+  .float-chip{animation:m-rise var(--m-slow) var(--m-ease) both,m-float 6s ease-in-out infinite}
+  .chip-a{animation-delay:900ms,1.4s}.chip-b{animation-delay:1150ms,2.2s}
+  .sb-launch{animation:m-ring 2.4s ease-out 2.5s 3}
+}
+@media(prefers-reduced-motion:reduce){.hero-art path{stroke-dasharray:none}}
