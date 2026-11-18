@@ -23,3 +23,17 @@
 .voice-label{font-size:9px;letter-spacing:.04em;color:#526d43;margin-bottom:8px}.voice-row{display:flex;align-items:center;gap:9px;margin:3px 0 6px}.voice-row .voice-icon{width:17px;height:21px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;color:#557b49}.voice-row .voice-wave{height:32px}
 @media(max-width:800px){.reply-pills{max-height:96px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}.js-motion .reveal{opacity:1;transform:none}.outcome{transform:none}}
+
+.hero-connect {
+  min-height: 44px;
+  margin-top: 16px;
+  background: var(--white);
+  border-color: var(--line);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.hero-connect:hover {
+  background: var(--sage);
+  border-color: var(--green);
+}
