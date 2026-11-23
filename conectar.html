@@ -217,7 +217,8 @@
 
   buttons[0].addEventListener('click', () => launch(false));
   buttons[1].addEventListener('click', () => launch(true));
-  api('/api/config').then(data => {
+  // Avoid an old sign-in response cached before the owner enabled public access.
+  api('/api/config?check=' + Date.now()).then(data => {
     configured = data.configured === true;
     render(configured ? 'Ready to connect your WhatsApp account' : 'Connections are being prepared. Please contact Symmetrybot.');
     setButtons();
