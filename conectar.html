@@ -61,224 +61,169 @@
 </style>
 </head>
 <body>
-<main>
+<main data-connection-api="https://symmetry-meta-connect.splendidanole128.chatgpt.site">
   <div class="mark" aria-hidden="true"></div>
   <h1>Connect your WhatsApp number to Symmetrybot</h1>
-  <p>Symmetrybot sets up an AI assistant that answers your customers on WhatsApp: it replies to questions, takes orders and notifies you of new ones. Sign in with Facebook to link your WhatsApp Business account. You choose which number to connect.</p>
+  <p>Connect your WhatsApp Business account to Symmetrybot. Our team sets up an AI assistant with your business information to answer customer questions. You choose the account and number to connect.</p>
 
   <h2>What happens when you connect</h2>
   <ol>
     <li>Sign in with Facebook and choose your business.</li>
     <li>Pick or create your WhatsApp Business account and phone number.</li>
-    <li>Verify the number with the code WhatsApp sends you.</li>
+    <li>Complete the verification steps Meta shows you, then return here to confirm your account and number.</li>
   </ol>
-  <p>Symmetrybot only receives the access needed to send and receive messages and to manage message templates for the account you connect. Facebook handles your sign-in. This page does not request or store your Facebook profile name.</p>
+  <p>You choose which WhatsApp assets Symmetrybot can access. We use the authorized account information to verify your connection and prepare your messaging service. Facebook handles your sign-in.</p>
 
   <div class="actions">
-    <button id="btn-new" class="primary" type="button">Connect with Facebook</button>
-    <button id="btn-app" class="secondary" type="button">Connect a number from the WhatsApp Business app</button>
-    <p class="hint">The second option uses Meta’s onboarding for eligible numbers in the WhatsApp Business app. Automated replies require separate server activation.</p>
+    <button id="btn-new" class="primary" type="button" disabled>Connect with Facebook</button>
+    <button id="btn-app" class="secondary" type="button" disabled>Connect a number from the WhatsApp Business app</button>
+    <p class="hint">Use the second option to keep using an eligible number in the WhatsApp Business app. Connecting your account does not turn on automated replies: our team completes your assistant setup first.</p>
   </div>
 
   <section class="status" aria-live="polite" id="status" hidden>
     <h2>Connection status</h2>
     <dl>
       <dt>Status</dt><dd id="s-state">Waiting</dd>
+      <dt>Business name</dt><dd id="s-business">—</dd>
+      <dt>WhatsApp number</dt><dd id="s-number">—</dd>
       <dt>WhatsApp Business Account ID</dt><dd id="s-waba">—</dd>
       <dt>Phone number ID</dt><dd id="s-phone">—</dd>
-      <dt>Server activation</dt><dd id="s-code">Not configured</dd>
+      <dt>Assistant setup</dt><dd id="s-code">Pending</dd>
     </dl>
     <p class="hint error" id="s-error" hidden></p>
   </section>
 
   <footer>
     <a href="https://symmetrybot.app/privacidad.html">Privacy policy</a>
-    <a href="eliminacion-datos.html">Data deletion</a>
+    <a href="https://symmetrybot.app/eliminacion-datos.html">Data deletion</a>
   </footer>
 </main>
 
 <script>
-  // ---- Settings ----
-  var APP_ID = '1125731596671496';
-  var CONFIG_ID = '2347894429301988';
-  var GRAPH_VERSION = 'v23.0';
-  // Optional HTTPS backend that exchanges the authorization code on the server.
-  // Keep App Secrets and access tokens on that server, never in this page.
-  var BACKEND_URL = '';
+(() => {
+  'use strict';
+  const API = document.querySelector('main').dataset.connectionApi.replace(/\/$/, '');
+  const el = Object.fromEntries(['state', 'waba', 'phone', 'business', 'number', 'code', 'error'].map(name => [name, document.getElementById(`s-${name}`)]));
+  const buttons = [document.getElementById('btn-new'), document.getElementById('btn-app')];
+  let configured = false, sdkReady = false, serial = 0, current = null;
+  const setButtons = () => buttons.forEach(button => { button.disabled = !configured || !sdkReady || !!current?.active; });
+  const render = text => { document.getElementById('status').hidden = false; el.state.textContent = text; };
+  const showError = text => { el.error.hidden = false; el.error.textContent = text; };
 
-  var session = { waba_id: '', phone_number_id: '' };
-  var code = '';
-  var attempt = 0;
-  var active = false;
-  var signupFinished = false;
-  var backendStarted = false;
-  var backendState = BACKEND_URL ? 'Not started' : 'Not configured';
+  async function api(path, value) {
+    const result = await fetch(`${API}${path}`, {
+      method: value ? 'POST' : 'GET',
+      credentials: new URL(API).origin === window.location.origin ? 'same-origin' : 'omit',
+      headers: value ? { 'Content-Type': 'application/json' } : {},
+      body: value ? JSON.stringify(value) : undefined,
+      cache: 'no-store'
+    });
+    if (!result.headers.get('content-type')?.includes('application/json')) throw new Error('Connections are being prepared. Please contact Symmetrybot.');
+    const data = await result.json();
+    if (!result.ok) throw new Error(data.message || 'The connection could not be completed.');
+    return data;
+  }
 
-  var el = {
-    status: document.getElementById('status'),
-    state: document.getElementById('s-state'),
-    waba: document.getElementById('s-waba'),
-    phone: document.getElementById('s-phone'),
-    backend: document.getElementById('s-code'),
-    error: document.getElementById('s-error'),
-    btnNew: document.getElementById('btn-new'),
-    btnApp: document.getElementById('btn-app')
+  function fail(attempt, message) {
+    if (attempt !== current) return;
+    attempt.active = false;
+    attempt.session = '';
+    render('Connection not completed');
+    showError(message);
+    setButtons();
+  }
+
+  async function finalize(attempt) {
+    if (attempt !== current || !attempt.active || attempt.finalizing || !attempt.session || !attempt.assets) return;
+    attempt.finalizing = true;
+    render('Verifying the WhatsApp account and phone number with Meta…');
+    try {
+      const result = await api('/api/connections/finalize', {
+        session: attempt.session,
+        nonce: attempt.nonce,
+        waba_id: attempt.assets.waba_id,
+        phone_number_id: attempt.assets.phone_number_id,
+        flow_type: attempt.flowType
+      });
+      if (attempt !== current) return;
+      attempt.session = '';
+      attempt.active = false;
+      el.waba.textContent = result.account.id;
+      el.phone.textContent = result.phone.id;
+      el.business.textContent = result.account.name || result.phone.name || 'Verified with Meta';
+      el.number.textContent = result.phone.number || 'Verified with Meta';
+      el.code.textContent = 'Our team will complete your assistant setup';
+      render('WhatsApp account verified. Automated replies will be enabled after your assistant setup is completed.');
+      setButtons();
+    } catch (error) { fail(attempt, error.message); }
+  }
+
+  window.fbAsyncInit = () => {
+    if (sdkReady) return;
+    FB.init({ appId: '1125731596671496', autoLogAppEvents: false, xfbml: false, version: 'v27.0' });
+    sdkReady = true;
+    setButtons();
   };
+  if (typeof FB !== 'undefined' && typeof FB.init === 'function') window.fbAsyncInit();
 
-  window.fbAsyncInit = function () {
-    FB.init({ appId: APP_ID, autoLogAppEvents: false, xfbml: false, version: GRAPH_VERSION });
-  };
-
-  function render(stateText) {
-    el.status.hidden = false;
-    el.state.textContent = stateText;
-    el.waba.textContent = session.waba_id || '—';
-    el.phone.textContent = session.phone_number_id || '—';
-    el.backend.textContent = backendState;
-  }
-
-  function showError(text) {
-    el.error.hidden = false;
-    el.error.textContent = text;
-  }
-
-  function unlock() {
-    el.btnNew.disabled = false;
-    el.btnApp.disabled = false;
-  }
-
-  function stopAttempt(stateText, errorText) {
-    active = false;
-    signupFinished = false;
-    code = '';
-    session = { waba_id: '', phone_number_id: '' };
-    unlock();
-    render(stateText);
-    if (errorText) showError(errorText);
-  }
-
-  function updateCompletion() {
-    if (!signupFinished) {
-      render('Signed in with Facebook. Waiting for Meta signup to finish…');
-      return;
-    }
-    if (!session.phone_number_id) {
-      render('Business account selected. Phone number setup and server activation are still pending.');
-      return;
-    }
-    if (!code) {
-      render('Meta signup completed. Waiting for Facebook authorization…');
-      return;
-    }
-    if (!BACKEND_URL) {
-      render('Meta signup completed. Server activation is not configured; automated replies are not active.');
-      return;
-    }
-    sendToBackend();
-  }
-
-  // Only accept Embedded Signup messages from Meta's expected origins.
-  window.addEventListener('message', function (event) {
-    if (!active || !/^https:\/\/(www|web)\.facebook\.com$/.test(event.origin)) return;
-    var data;
-    try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data; } catch (e) { return; }
-    if (!data || data.type !== 'WA_EMBEDDED_SIGNUP') return;
-    if (data.event === 'CANCEL') {
-      stopAttempt('Meta signup was cancelled before completion.');
-      return;
-    }
-    if (data.event === 'ERROR') {
-      stopAttempt('Meta signup could not be completed.', 'Meta reported a signup error. Please try again or contact us.');
-      return;
-    }
-    if (['FINISH', 'FINISH_ONLY_WABA', 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'].indexOf(data.event) === -1) return;
-    if (!data.data || typeof data.data !== 'object') return;
-    var wabaId = String(data.data.waba_id || '');
-    var phoneId = String(data.data.phone_number_id || '');
-    if (!/^\d+$/.test(wabaId)) return;
-    if (data.event !== 'FINISH_ONLY_WABA' && !/^\d+$/.test(phoneId)) return;
-    session.waba_id = wabaId;
-    session.phone_number_id = /^\d+$/.test(phoneId) ? phoneId : '';
-    signupFinished = true;
-    updateCompletion();
+  window.addEventListener('message', event => {
+    const attempt = current;
+    if (!attempt?.active || !['https://www.facebook.com', 'https://web.facebook.com'].includes(event.origin)) return;
+    let message;
+    try { message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data; } catch { return; }
+    if (!message || message.type !== 'WA_EMBEDDED_SIGNUP') return;
+    if (message.event === 'CANCEL') return fail(attempt, 'Meta signup was cancelled before completion.');
+    if (message.event === 'ERROR') return fail(attempt, 'Meta could not complete signup. Please try again.');
+    if (!['FINISH', 'FINISH_ONLY_WABA', 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING', 'FINISH_GRANT_ONLY_API_ACCESS'].includes(message.event)) return;
+    const data = message.data;
+    if (!data || !/^\d{5,25}$/.test(String(data.waba_id || ''))) return;
+    // Coexistence may return only the account ID; the server verifies its number through Meta.
+    const phoneId = String(data.phone_number_id || '');
+    if (phoneId && !/^\d{5,25}$/.test(phoneId)) return;
+    attempt.flowType = message.event;
+    attempt.assets = { waba_id: String(data.waba_id), phone_number_id: phoneId };
+    if (!attempt.session) render('Meta signup completed. Verifying your authorization…');
+    void finalize(attempt);
   });
 
-  function sendToBackend() {
-    if (!active || backendStarted || !BACKEND_URL || !code || !signupFinished || !session.waba_id || !session.phone_number_id) return;
-    // The code is single-use. Dispatch it at most once per signup attempt.
-    backendStarted = true;
-    backendState = 'Submitting signup details';
-    render('Meta signup completed. Sending details to the server…');
-    var requestAttempt = attempt;
-    fetch(BACKEND_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: code, waba_id: session.waba_id, phone_number_id: session.phone_number_id })
-    }).then(function (response) {
-      if (!response.ok) throw new Error('Backend rejected signup');
-      if (requestAttempt !== attempt || !active) return;
-      code = '';
-      active = false;
-      backendState = 'Signup details submitted';
-      render('Signup details were delivered to the server. Service activation must be confirmed separately.');
-    }).catch(function () {
-      if (requestAttempt !== attempt || !active) return;
-      code = '';
-      active = false;
-      backendState = 'Submission failed';
-      render('Meta signup completed, but server activation could not be confirmed.');
-      showError('We could not submit the signup details. Please contact us before starting another signup.');
-    });
-  }
-
-  function launch(fromBusinessApp) {
-    attempt += 1;
-    var thisAttempt = attempt;
-    active = false;
-    signupFinished = false;
-    backendStarted = false;
-    code = '';
-    session = { waba_id: '', phone_number_id: '' };
-    backendState = BACKEND_URL ? 'Not started' : 'Not configured';
+  function launch(coexistence) {
+    if (!configured || !sdkReady || current?.active) return;
+    const nonce = Array.from(crypto.getRandomValues(new Uint8Array(32)), byte => byte.toString(16).padStart(2, '0')).join('');
+    const attempt = { id: ++serial, nonce, active: true, session: '', assets: null, finalizing: false };
+    current = attempt;
     el.error.hidden = true;
-    el.error.textContent = '';
-    if (typeof FB === 'undefined') {
-      render('Facebook could not load');
-      showError('Facebook Login did not load. Disable any content blocker for this page and try again.');
-      return;
-    }
-    active = true;
-    el.btnNew.disabled = true;
-    el.btnApp.disabled = true;
-    render('Waiting for Facebook…');
-
-    var extras = { setup: {}, sessionInfoVersion: '3', version: 'v4' };
-    if (fromBusinessApp) extras.featureType = 'whatsapp_business_app_onboarding';
-
+    for (const name of ['waba', 'phone', 'business', 'number']) el[name].textContent = '—';
+    el.code.textContent = 'Pending';
+    render('Continue in the Facebook window…');
+    setButtons();
+    const extras = { setup: {}, sessionInfoVersion: '3', version: 'v4' };
+    if (coexistence) extras.featureType = 'whatsapp_business_app_onboarding';
     try {
-      FB.login(function (response) {
-        if (thisAttempt !== attempt || !active) return;
-        unlock();
-        if (response && response.authResponse && response.authResponse.code) {
-          code = response.authResponse.code;
-          updateCompletion();
-        } else {
-          stopAttempt('Facebook sign-in was cancelled or authorization was not granted.');
-        }
-      }, {
-        config_id: CONFIG_ID,
-        response_type: 'code',
-        override_default_response_type: true,
-        extras: extras
-      });
-    } catch (e) {
-      stopAttempt('Facebook Login could not start.', 'Please reload the page and try again.');
-    }
+      FB.login(response => {
+        if (attempt !== current || !attempt.active) return;
+        const code = response?.authResponse?.code;
+        if (!code) return fail(attempt, 'Facebook authorization was not completed.');
+        // Exchange immediately: Meta's code expires after 30 seconds. Do not wait for asset events.
+        render('Verifying your Meta authorization…');
+        api('/api/oauth/exchange', { code, nonce }).then(data => {
+          if (attempt !== current || !attempt.active) return;
+          attempt.session = data.session;
+          render(attempt.assets ? 'Verifying your WhatsApp connection…' : 'Authorization received. Finish the WhatsApp steps in the Meta window.');
+          void finalize(attempt);
+        }).catch(error => fail(attempt, error.message));
+      }, { config_id: '2347894429301988', response_type: 'code', override_default_response_type: true, extras });
+    } catch { fail(attempt, 'Facebook Login could not start. Please reload this page.'); }
   }
 
-  el.btnNew.addEventListener('click', function () { launch(false); });
-  el.btnApp.addEventListener('click', function () { launch(true); });
-  if (!BACKEND_URL) render('Signup demonstration: Meta signup can be completed, but server activation is not configured. Automated replies will not be activated by this page.');
+  buttons[0].addEventListener('click', () => launch(false));
+  buttons[1].addEventListener('click', () => launch(true));
+  api('/api/config').then(data => {
+    configured = data.configured === true;
+    render(configured ? 'Ready to connect your WhatsApp account' : 'Connections are being prepared. Please contact Symmetrybot.');
+    setButtons();
+  }).catch(error => { render('Connection unavailable'); showError(error.message); });
+})();
+
 </script>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </body>
